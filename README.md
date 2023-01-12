@@ -1,16 +1,31 @@
-# audionotes
+# [![Logo](https://i.imgur.com/b20v6nN.png)](https://github.com/maximoospital/Audionotes/)
 
-A simple utility for making mixed text and audio memos.
+### A slick, lightweight and multi-platform voicenote recorder that puts a unique spin on a classic phone app.
+ [Download the app (Android only)](https://github.com/maximoospital/Audionotes/releases)
+## Features
 
-## Getting Started
+- Apple-inspired Cupertino style
+- Made in Flutter to run natively on phones as a very lightweight app, at about 7mb.
+- Animated waveforms
+- Mix text and audio, making your voicenotes a much more useful tool.
+- Light and Dark modes.
 
-This project is a starting point for a Flutter application.
+## Screenshots
 
-A few resources to get you started if this is your first Flutter project:
+![App Screenshot](https://i.imgur.com/gSickxm.png)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+![App Screenshot](https://i.imgur.com/qo3V836.png)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
+## Libraries used
+
+ - [Flutter](https://github.com/flutter/flutter)
+ - [Flutter_Native_Splash](https://github.com/jonbhanson/flutter_native_splash)
+ - [Record](https://pub.dev/packages/record)
+ - [Audio Waveforms](https://pub.dev/packages/audio_waveforms)
+
+## Run locally (as an Android app)
+
+You can download the version that bests suits your phone's architecture from the [Releases](https://github.com/maximoospital/Audionotes/releases) tab, and install it as an APK.
+
+[![Logo](https://i.imgur.com/XlF4lM5.png)](https://github.com/maximoospital) 
