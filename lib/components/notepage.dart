@@ -274,10 +274,10 @@ class notePageState extends State<notepage> {
       final _path = directory.path; // instead of "/storage/emulated/0"
       final date = widget.date;
       final id = widget.ID.toInt();
-      toggleCompanyTimer(stopTimer: "false");
       File('$_path/Audionotes/Audionote-($date)-$id.m4a').createSync(recursive: true);
       final pathFile = '$_path/Audionotes/Audionote-($date)-$id.m4a';
       await recorderController.record(path: pathFile);
+      toggleCompanyTimer(stopTimer: "false");
     } else if(isRecording == false) {
       toggleCompanyTimer(stopTimer: "pause");
       await recorderController.pause();
@@ -288,7 +288,18 @@ class notePageState extends State<notepage> {
       recorderController.stop();
       setState(() {
         isRecording = false;
+        isLoading = true;
+      });
+      final directory = await getApplicationDocumentsDirectory();
+      final _path = directory.path; // instead of "/storage/emulated/0"
+      final date = widget.date;
+      final id = widget.ID.toInt();
+      final pathFile = '$_path/Audionotes/Audionote-($date)-$id.m4a';
+      await playerController.preparePlayer(path: pathFile, shouldExtractWaveform: false, volume: 1.0);
+      await playerController.extractWaveformData(path: pathFile, noOfSamples: 100).then((data)=>waveformData = data);
+      setState(() {
         hasFile = true;
+        isLoading = false;
       });
   }
   void updateStopwatch() {
