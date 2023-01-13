@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
 import './components/onboarding.dart';
+import 'package:holding_gesture/holding_gesture.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'dart:io';
 
@@ -187,6 +188,67 @@ class homeState extends State<Home> {
       ),
     );
   }
+  final TextEditingController titleController = TextEditingController();
+  void _propertiesDialog(BuildContext context, double ID) {
+    titleController.text = '';
+    showCupertinoModalPopup<void>(
+      context: context,
+      builder: (BuildContext context) => CupertinoAlertDialog(
+        title: const Text("Note title"),
+        content: Card(
+          color: Colors.transparent,
+          elevation: 0.0,
+          child: Column(
+            children: <Widget>[
+              const SizedBox(height:15),
+              CupertinoTextField(
+                placeholder: yourObjectList[yourObjectList.indexWhere(((yourObject) => yourObject.ID == ID))].title,
+                inputFormatters: [
+                  LengthLimitingTextInputFormatter(35),
+                ],
+                controller: titleController,
+              ),
+            ],
+          ),
+        ),
+        actions: <CupertinoDialogAction>[
+          CupertinoDialogAction(
+            /// This parameter indicates this action is the default,
+            /// and turns the action's text to bold text.
+            isDefaultAction: false,
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('Cancel'),
+          ),
+          CupertinoDialogAction(
+            /// This parameter indicates the action would perform
+            /// a destructive action such as deletion, and turns
+            /// the action's text color to red.
+            isDestructiveAction: false,
+            onPressed: () {
+              if(titleController.text.isNotEmpty){
+                Navigator.pop(context);
+                final int index = yourObjectList.indexWhere(((yourObject) => yourObject.ID == ID));
+                setState(() {
+                  yourObjectList[index].title = titleController.text;
+                });
+                refresh();
+              } else {
+                Navigator.pop(context);
+                refresh();
+              }
+            },
+            child: const Text('Confirm'),
+          ),
+        ],
+      ),
+    );
+  }
+  void dispose() async{
+    super.dispose();
+    titleController.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     FlutterNativeSplash.remove();
@@ -246,77 +308,82 @@ class homeState extends State<Home> {
                                   builder: (BuildContext context, StateSetter setState)
                                   {
                                     return Column(
-                                      children: yourObjectListRev.map((currentObject) {
-                                        final index = yourObjectList.indexWhere(((yourObject) => yourObject.ID == currentObject.ID));
-                                        final item = yourObjectList[index];
-                                        return Row(
-                                          children: <Widget>[
-                                            Expanded(
-                                              child: Dismissible(
-                                                key: Key(item.ID.toString()),
-                                                onDismissed: (direction) {
-                                                  removeToList(currentObject.ID);
-                                                },
-                                                background: Container(color: Colors.red),
-                                                child: Container(
-                                                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                                                  child: CupertinoButton(
-                                                    pressedOpacity: 0.65,
-                                                    borderRadius: const BorderRadius.all(
-                                                      Radius.circular(0),
-                                                    ),
-                                                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 16),
-                                                    alignment: Alignment.centerLeft,
-                                                    child: Row(
-                                          children:[
+                                          children: yourObjectListRev.map((currentObject) {
+                                            final index = yourObjectList.indexWhere(((yourObject) => yourObject.ID == currentObject.ID));
+                                            final item = yourObjectList[index];
+                                            return HoldDetector(
+                                                onHold: () { _propertiesDialog(context, currentObject.ID); },
+                                                holdTimeout: Duration(milliseconds: 200),
+                                                enableHapticFeedback: true,
+                                                child: Row(
+                                              children: <Widget>[
                                                 Expanded(
-                                                    child: Row(
-                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                        children: [
-                                                          Expanded(
-                                                            child: Column(
-                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                children:[
-                                                                  Text(
-                                                                      '${currentObject.title}',
-                                                                      style: TextStyle(fontWeight: FontWeight.bold, color: CupertinoTheme.brightnessOf(context) == Brightness.dark ? Colors.white : Colors.black),
-                                                                      overflow: TextOverflow.ellipsis
-                                                                  ),
-                                                                  Text(
-                                                                      '${currentObject.category}',
-                                                                      style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
-                                                                      overflow: TextOverflow.ellipsis
-                                                                  ),
-                                                                  Text(
-                                                                    '${currentObject.date}',
-                                                                    style: TextStyle(color: Colors.grey),
-                                                                  ),
-                                                                ]
-                                                            ),
+                                                  child: Dismissible(
+                                                      key: Key(item.ID.toString()),
+                                                      onDismissed: (direction) {
+                                                        removeToList(currentObject.ID);
+                                                      },
+                                                      background: Container(color: Colors.red),
+                                                      child: Container(
+                                                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                                                        child: CupertinoButton(
+                                                          pressedOpacity: 0.65,
+                                                          borderRadius: const BorderRadius.all(
+                                                            Radius.circular(0),
                                                           ),
-                                                          const Icon(
-                                                            Icons.chevron_right,
-                                                            color: Colors.grey,
+                                                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 16),
+                                                          alignment: Alignment.centerLeft,
+                                                          child: Row(
+                                                              children:[
+                                                                Expanded(
+                                                                    child: Row(
+                                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                        children: [
+                                                                          Expanded(
+                                                                            child: Column(
+                                                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                children:[
+                                                                                  Text(
+                                                                                      '${currentObject.title}',
+                                                                                      style: TextStyle(fontWeight: FontWeight.bold, color: CupertinoTheme.brightnessOf(context) == Brightness.dark ? Colors.white : Colors.black),
+                                                                                      overflow: TextOverflow.ellipsis
+                                                                                  ),
+                                                                                  Text(
+                                                                                      '${currentObject.category}',
+                                                                                      style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
+                                                                                      overflow: TextOverflow.ellipsis
+                                                                                  ),
+                                                                                  Text(
+                                                                                    '${currentObject.date}',
+                                                                                    style: TextStyle(color: Colors.grey),
+                                                                                  ),
+                                                                                ]
+                                                                            ),
+                                                                          ),
+                                                                          const Icon(
+                                                                            Icons.chevron_right,
+                                                                            color: Colors.grey,
+                                                                          ),
+                                                                        ]
+                                                                    )
+                                                                ),
+                                                              ]
                                                           ),
-                                                        ]
-                                                    )
-                                                ),
-                                              ]
-                                            ),
-                                                    onPressed: () {
-                                                      Navigator.push(context, CupertinoPageRoute<Widget>(
-                                                          builder: (BuildContext context) {
-                                                            return notepage(ID: currentObject.ID, category: currentObject.category, date: currentObject.date, notifyParent: () { refresh(); },);
-                                                          }));
-                                                    },
+                                                          onPressed: () {
+                                                            Navigator.push(context, CupertinoPageRoute<Widget>(
+                                                                builder: (BuildContext context) {
+                                                                  return notepage(ID: currentObject.ID, category: currentObject.category, date: currentObject.date, notifyParent: () { refresh(); },);
+                                                                }));
+                                                          },
+                                                        ),
+                                                      )
                                                   ),
-                                                )
-                                              ),
-                                            ),
-                                          ],
+                                                ),
+                                              ],
+                                            )
+                                            );
+                                          }).toList(),
                                         );
-                                      }).toList(),
-                                    );
                                   }
                               ),
                             ],

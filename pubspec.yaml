@@ -45,6 +45,7 @@ dependencies:
   rxdart: ^0.27.7
   cupertino_onboarding: ^1.1.1
   flutter_native_splash: ^2.2.16
+  holding_gesture: ^1.1.0
   audio_waveforms:
     git:
       url: https://github.com/maximoospital/audio_waveforms_playerseek
