@@ -12,10 +12,9 @@
 
 ## Screenshots
 
-![App Screenshot](https://i.imgur.com/gSickxm.png)
-
-![App Screenshot](https://i.imgur.com/qaTHDPM.png)
-
+Onboarding Page             |  Home Page
+:-------------------------:|:-------------------------:
+![](https://i.imgur.com/gSickxm.png)  |  ![](https://i.imgur.com/qaTHDPM.png)
 
 ## Libraries used
 
