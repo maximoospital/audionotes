@@ -14,7 +14,7 @@
 
 ![App Screenshot](https://i.imgur.com/gSickxm.png)
 
-![App Screenshot](https://i.imgur.com/qo3V836.png)
+![App Screenshot](https://i.imgur.com/qaTHDPM.png)
 
 
 ## Libraries used
