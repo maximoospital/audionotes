@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/cupertino.dart';
@@ -57,7 +55,7 @@ void main() async {
   if(decodedObjects == null){
     yourObjectList = [];
   } else {
-    yourObjectList = decodedObjects!.map((res)=>YourObject.fromJson(json.decode(res))).toList();
+    yourObjectList = decodedObjects.map((res)=>YourObject.fromJson(json.decode(res))).toList();
   }
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
@@ -112,14 +110,14 @@ class homeState extends State<Home> {
       var now = DateTime.now();
       var formatter = DateFormat('dd-MM-yyyy');
       String formattedDate = formatter.format(now);
-      yourObjectList.add(YourObject(ID: 1, date: formattedDate, title: "New Audionote #1", category: ''));
+      yourObjectList.add(YourObject(ID: 1, date: formattedDate, title: "New Audionote #1", category: 'Uncategorized'));
       refresh();
     } else {
       var now = DateTime.now();
       var formatter = DateFormat('dd-MM-yyyy');
       String formattedDate = formatter.format(now);
       final int newID = yourObjectList.last.ID.toInt();
-      yourObjectList.add(YourObject(ID: yourObjectList.last.ID+1, date: formattedDate, title: "New Audionote #${newID+1}", category: ''));
+      yourObjectList.add(YourObject(ID: yourObjectList.last.ID+1, date: formattedDate, title: "New Audionote #${newID+1}", category: 'Uncategorized'));
       refresh();
     }
   }
@@ -218,100 +216,96 @@ class homeState extends State<Home> {
           ),
           SliverToBoxAdapter (
             child: yourObjectList.isEmpty ? Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15),
+              padding: EdgeInsets.symmetric(horizontal: 10),
               child: Column(
                   children:[SizedBox(height: 22),
                     Text("No notes here! Press + to create new notes.",
                         style: TextStyle(color: CupertinoTheme.brightnessOf(context) == Brightness.dark ? Colors.white.withOpacity(0.6) : Colors.black.withOpacity(0.6)))]
               )
             ) : Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                CupertinoSearchTextField(
-                  controller: controller,
-                  placeholder: "Search a note",
-                  borderRadius: BorderRadius.circular(0.0),
-                  onChanged: (value) {
-                    filterSearch(value);
-                  },
-                  autocorrect: true,
+              children:[
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                  child: CupertinoSearchTextField(
+                            controller: controller,
+                            placeholder: "Search a note",
+                            onChanged: (value) {
+                              filterSearch(value);
+                            },
+                            autocorrect: true,
+                          ),
                 ),
-                StatefulBuilder(
-                    builder: (BuildContext context, StateSetter setState)
-                    {
-                      return Column(
-                        children: yourObjectListRev.map((currentObject) {
-                          final index = yourObjectList.indexWhere(((yourObject) => yourObject.ID == currentObject.ID));
-                          final item = yourObjectList[index];
-                          return Row(
+                Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 0),
+                    child: Column(
+                        children:[
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
-                              Expanded(
-                                child: Dismissible(
-                                  key: Key(item.ID.toString()),
-                                  onDismissed: (direction) {
-                                    TextEditingController controller = TextEditingController(text:"");
-                                    removeToList(currentObject.ID);
-                                  },
-                                  background: Container(color: Colors.red),
-                                  child: CupertinoButton(
-                                    pressedOpacity: 0.65,
-                                    borderRadius: const BorderRadius.all(
-                                      Radius.circular(0),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                                    alignment: Alignment.centerLeft,
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            const Padding(
-                                              padding: EdgeInsets.only(right: 12),
-                                              child: SizedBox(
-                                                height: 28,
-                                                width: 28,
-                                                child: DecoratedBox(
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.blue,
-                                                    borderRadius: BorderRadius.all(
-                                                      Radius.circular(4),
+                              StatefulBuilder(
+                                  builder: (BuildContext context, StateSetter setState)
+                                  {
+                                    return Column(
+                                      children: yourObjectListRev.map((currentObject) {
+                                        final index = yourObjectList.indexWhere(((yourObject) => yourObject.ID == currentObject.ID));
+                                        final item = yourObjectList[index];
+                                        return Row(
+                                          children: <Widget>[
+                                            Expanded(
+                                              child: Dismissible(
+                                                key: Key(item.ID.toString()),
+                                                onDismissed: (direction) {
+                                                  removeToList(currentObject.ID);
+                                                },
+                                                background: Container(color: Colors.red),
+                                                child: Padding(
+                                                  padding: EdgeInsets.symmetric(horizontal: 15),
+                                                  child: CupertinoButton(
+                                                    pressedOpacity: 0.65,
+                                                    borderRadius: const BorderRadius.all(
+                                                      Radius.circular(0),
                                                     ),
+                                                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 16),
+                                                    alignment: Alignment.centerLeft,
+                                                    child: Row(
+                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                      children: [
+                                                        Row(
+                                                          children: [
+                                                            Text(
+                                                              '${currentObject.title} - ${currentObject.date}',
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        const Icon(
+                                                          Icons.chevron_right,
+                                                          color: Colors.grey,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    onPressed: () {
+                                                      Navigator.push(context, CupertinoPageRoute<Widget>(
+                                                          builder: (BuildContext context) {
+                                                            return notepage(ID: currentObject.ID, category: currentObject.category, date: currentObject.date, notifyParent: () { refresh(); },);
+                                                          }));
+                                                    },
                                                   ),
-                                                  child: Icon(
-                                                    Icons.audio_file,
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
+                                                )
                                               ),
                                             ),
-                                            Text(
-                                              '${currentObject.title} - ${currentObject.date}',
-                                            ),
                                           ],
-                                        ),
-                                        const Icon(
-                                          Icons.chevron_right,
-                                          color: Colors.grey,
-                                        ),
-                                      ],
-                                    ),
-                                    onPressed: () {
-                                      Navigator.push(context, CupertinoPageRoute<Widget>(
-                                          builder: (BuildContext context) {
-                                            return notepage(ID: currentObject.ID, category: currentObject.category, date: currentObject.date, notifyParent: () { refresh(); },);
-                                          }));
-                                    },
-                                  ),
-                                ),
+                                        );
+                                      }).toList(),
+                                    );
+                                  }
                               ),
                             ],
-                          );
-                        }).toList(),
-                      );
-                    }
+                          ),
+                        ]
+                    )
                 ),
-              ],
-            ),
+              ]
+            )
           ),
         ],
       ),
