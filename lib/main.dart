@@ -258,8 +258,8 @@ class homeState extends State<Home> {
                                                   removeToList(currentObject.ID);
                                                 },
                                                 background: Container(color: Colors.red),
-                                                child: Padding(
-                                                  padding: EdgeInsets.symmetric(horizontal: 15),
+                                                child: Container(
+                                                  padding: const EdgeInsets.symmetric(horizontal: 15),
                                                   child: CupertinoButton(
                                                     pressedOpacity: 0.65,
                                                     borderRadius: const BorderRadius.all(
@@ -268,21 +268,41 @@ class homeState extends State<Home> {
                                                     padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 16),
                                                     alignment: Alignment.centerLeft,
                                                     child: Row(
-                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                      children: [
-                                                        Row(
-                                                          children: [
-                                                            Text(
-                                                              '${currentObject.title} - ${currentObject.date}',
+                                          children:[
+                                                Expanded(
+                                                    child: Row(
+                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                        children: [
+                                                          Expanded(
+                                                            child: Column(
+                                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                                children:[
+                                                                  Text(
+                                                                      '${currentObject.title}',
+                                                                      style: TextStyle(fontWeight: FontWeight.bold, color: CupertinoTheme.brightnessOf(context) == Brightness.dark ? Colors.white : Colors.black),
+                                                                      overflow: TextOverflow.ellipsis
+                                                                  ),
+                                                                  Text(
+                                                                      '${currentObject.category}',
+                                                                      style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
+                                                                      overflow: TextOverflow.ellipsis
+                                                                  ),
+                                                                  Text(
+                                                                    '${currentObject.date}',
+                                                                    style: TextStyle(color: Colors.grey),
+                                                                  ),
+                                                                ]
                                                             ),
-                                                          ],
-                                                        ),
-                                                        const Icon(
-                                                          Icons.chevron_right,
-                                                          color: Colors.grey,
-                                                        ),
-                                                      ],
-                                                    ),
+                                                          ),
+                                                          const Icon(
+                                                            Icons.chevron_right,
+                                                            color: Colors.grey,
+                                                          ),
+                                                        ]
+                                                    )
+                                                ),
+                                              ]
+                                            ),
                                                     onPressed: () {
                                                       Navigator.push(context, CupertinoPageRoute<Widget>(
                                                           builder: (BuildContext context) {

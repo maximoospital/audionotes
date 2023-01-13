@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:audionotes/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class notepage extends StatefulWidget {
   const notepage({super.key, required this.ID, required this.date, required this.notifyParent, required this.category});
@@ -113,6 +114,9 @@ class notePageState extends State<notepage> {
               const SizedBox(height:15),
               CupertinoTextField(
                 placeholder: yourObjectList[yourObjectList.indexWhere(((yourObject) => yourObject.ID == widget.ID))].title,
+                inputFormatters: [
+                  LengthLimitingTextInputFormatter(35),
+                ],
                 controller: titleController,
               ),
             ],
