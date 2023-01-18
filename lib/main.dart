@@ -15,7 +15,7 @@ class YourObject {
   String title;
   final double ID;
   final String date;
-  final String category;
+  String category;
 
   YourObject({
     required this.title,
@@ -172,7 +172,7 @@ class homeState extends State<Home> {
       context: context,
       builder: (BuildContext context) => CupertinoAlertDialog(
         title: const Text('About'),
-        content: const Text('Audionote is an application \nby Maximo Ospital, 2022.'),
+        content: const Text('Audionote is an application \nby Maximo Ospital, 2023.'),
         actions: <CupertinoDialogAction>[
           CupertinoDialogAction(
             /// This parameter indicates the action would perform
@@ -189,18 +189,30 @@ class homeState extends State<Home> {
     );
   }
   final TextEditingController titleController = TextEditingController();
+  final TextEditingController categoryType = TextEditingController();
+
   void _propertiesDialog(BuildContext context, double ID) {
-    titleController.text = '';
+    titleController.text = yourObjectList[yourObjectList.indexWhere(((yourObject) => yourObject.ID == ID))].title;
     showCupertinoModalPopup<void>(
       context: context,
       builder: (BuildContext context) => CupertinoAlertDialog(
-        title: const Text("Note title"),
+        title: Text("Rename"),
         content: Card(
           color: Colors.transparent,
           elevation: 0.0,
           child: Column(
             children: <Widget>[
               const SizedBox(height:15),
+              SizedBox(
+                width: double.infinity,
+                child: Container(
+                  child: Text(
+                    "Note title:",
+                    textAlign: TextAlign.left,
+                  ),
+                ),
+              ),
+              const SizedBox(height:5),
               CupertinoTextField(
                 placeholder: yourObjectList[yourObjectList.indexWhere(((yourObject) => yourObject.ID == ID))].title,
                 inputFormatters: [
@@ -228,18 +240,55 @@ class homeState extends State<Home> {
             isDestructiveAction: false,
             onPressed: () {
               if(titleController.text.isNotEmpty){
-                Navigator.pop(context);
                 final int index = yourObjectList.indexWhere(((yourObject) => yourObject.ID == ID));
                 setState(() {
                   yourObjectList[index].title = titleController.text;
                 });
                 refresh();
               } else {
-                Navigator.pop(context);
                 refresh();
               }
+              Navigator.pop(context);
+              Navigator.pop(context);
+              refresh();
             },
             child: const Text('Confirm'),
+          ),
+        ],
+      ),
+    );
+  }
+  void _showActionSheet(BuildContext context, double ID) {
+    showCupertinoModalPopup<void>(
+      context: context,
+      builder: (BuildContext context) => CupertinoActionSheet(
+        title: Text("${yourObjectList[yourObjectList.indexWhere(((yourObject) => yourObject.ID == ID))].title} - Properties"),
+        actions: <CupertinoActionSheetAction>[
+          CupertinoActionSheetAction(
+            /// This parameter indicates the action would be a default
+            /// defualt behavior, turns the action's text to bold text.
+            isDefaultAction: true,
+            onPressed: () {
+              _propertiesDialog(context, ID);
+            },
+            child: const Text('Rename'),
+          ),
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('Change Category'),
+          ),
+          CupertinoActionSheetAction(
+            /// This parameter indicates the action would perform
+            /// a destructive action such as delete or exit and turns
+            /// the action's text color to red.
+            isDestructiveAction: true,
+            onPressed: () {
+              Navigator.pop(context);
+              removeToList(ID);
+            },
+            child: const Text('Delete'),
           ),
         ],
       ),
@@ -286,9 +335,13 @@ class homeState extends State<Home> {
               )
             ) : Column(
               children:[
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                  child: CupertinoSearchTextField(
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      child: Container(
+                        child:
+                          CupertinoSearchTextField(
                             controller: controller,
                             placeholder: "Search a note",
                             onChanged: (value) {
@@ -296,6 +349,8 @@ class homeState extends State<Home> {
                             },
                             autocorrect: true,
                           ),
+                      )
+                  ),
                 ),
                 Padding(
                     padding: EdgeInsets.symmetric(horizontal: 0),
@@ -312,7 +367,7 @@ class homeState extends State<Home> {
                                             final index = yourObjectList.indexWhere(((yourObject) => yourObject.ID == currentObject.ID));
                                             final item = yourObjectList[index];
                                             return HoldDetector(
-                                                onHold: () { _propertiesDialog(context, currentObject.ID); },
+                                                onHold: () { _showActionSheet(context, currentObject.ID); },
                                                 holdTimeout: Duration(milliseconds: 200),
                                                 enableHapticFeedback: true,
                                                 child: Row(
@@ -348,10 +403,14 @@ class homeState extends State<Home> {
                                                                                       style: TextStyle(fontWeight: FontWeight.bold, color: CupertinoTheme.brightnessOf(context) == Brightness.dark ? Colors.white : Colors.black),
                                                                                       overflow: TextOverflow.ellipsis
                                                                                   ),
-                                                                                  Text(
-                                                                                      '${currentObject.category}',
-                                                                                      style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
-                                                                                      overflow: TextOverflow.ellipsis
+                                                                                  Text.rich(
+                                                                                      overflow: TextOverflow.ellipsis,
+                                                                                      TextSpan(
+                                                                                          children: [
+                                                                                            TextSpan(text:"${currentObject.category}", style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey)),
+                                                                                            TextSpan(text:" • 0:00", style: TextStyle(color: Colors.grey))
+                                                                                          ]
+                                                                                      )
                                                                                   ),
                                                                                   Text(
                                                                                     '${currentObject.date}',
