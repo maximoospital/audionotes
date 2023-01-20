@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import './components/onboarding.dart';
 import 'package:holding_gesture/holding_gesture.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'dart:io';
 
 class YourObject {
@@ -44,7 +45,6 @@ int order = 1;
 List<YourObject> yourObjectList = [];
 List<String> encodedObjects = yourObjectList.map((res)=>json.encode(res.toJson())).toList();
 Iterable yourObjectListRev = yourObjectList.reversed;
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -85,6 +85,7 @@ class Home extends StatefulWidget {
   @override
   State<Home> createState() => homeState();
 }
+
 
 class homeState extends State<Home> {
   TextEditingController controller = TextEditingController(text: "");
@@ -190,8 +191,9 @@ class homeState extends State<Home> {
   }
   final TextEditingController titleController = TextEditingController();
   final TextEditingController categoryType = TextEditingController();
-
-  void _propertiesDialog(BuildContext context, double ID) {
+  CupertinoSuggestionsBoxController _suggestionsBoxController = CupertinoSuggestionsBoxController();
+  String favoriteCategory = 'Unavailable';
+  void _titleDialog(BuildContext context, double ID) {
     titleController.text = yourObjectList[yourObjectList.indexWhere(((yourObject) => yourObject.ID == ID))].title;
     showCupertinoModalPopup<void>(
       context: context,
@@ -258,6 +260,102 @@ class homeState extends State<Home> {
       ),
     );
   }
+  void _categoryDialog(BuildContext context, double ID) {
+    List<String> categories = yourObjectList.map((yourObject) => yourObject.category).toList().toSet().toList();
+    print(categories);
+    List<String> getSuggestions(String query) {
+      List<String> matches = <String>[];
+      matches.addAll(categories);
+
+      matches.retainWhere((s) => s.toLowerCase().contains(query.toLowerCase()));
+      return matches;
+    }
+    categoryType.text = yourObjectList[yourObjectList.indexWhere(((yourObject) => yourObject.ID == ID))].category;
+    showCupertinoModalPopup<void>(
+      context: context,
+      builder: (BuildContext context) => CupertinoAlertDialog(
+        title: Text("Change category"),
+        content: Card(
+          color: Colors.transparent,
+          elevation: 0.0,
+          child: Column(
+            children: <Widget>[
+              const SizedBox(height:15),
+              SizedBox(
+                width: double.infinity,
+                child: Container(
+                  child: Text(
+                    "Note category:",
+                    textAlign: TextAlign.left,
+                  ),
+                ),
+              ),
+              const SizedBox(height:5),
+              CupertinoTypeAheadFormField(
+                getImmediateSuggestions: true,
+                suggestionsBoxController: _suggestionsBoxController,
+                textFieldConfiguration: CupertinoTextFieldConfiguration(
+                  controller: categoryType,
+                  maxLength: 35,
+                ),
+                suggestionsCallback: (pattern) {
+                  return Future.delayed(
+                    Duration(seconds: 1),
+                        () => getSuggestions(pattern),
+                  );
+                },
+                itemBuilder: (context, String suggestion) {
+                  return Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Text(
+                      suggestion,
+                    ),
+                  );
+                },
+                onSuggestionSelected: (String suggestion) {
+                  categoryType.text = suggestion;
+                },
+                validator: (value) =>
+                value!.isEmpty ? 'Please select a category' : null,
+              ),
+            ],
+          ),
+        ),
+        actions: <CupertinoDialogAction>[
+          CupertinoDialogAction(
+            /// This parameter indicates this action is the default,
+            /// and turns the action's text to bold text.
+            isDefaultAction: false,
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('Cancel'),
+          ),
+          CupertinoDialogAction(
+            /// This parameter indicates the action would perform
+            /// a destructive action such as deletion, and turns
+            /// the action's text color to red.
+            isDestructiveAction: false,
+            onPressed: () {
+              if(categoryType.text.isNotEmpty){
+                final int index = yourObjectList.indexWhere(((yourObject) => yourObject.ID == ID));
+                setState(() {
+                  yourObjectList[index].category = categoryType.text;
+                });
+                refresh();
+              } else {
+                refresh();
+              }
+              Navigator.pop(context);
+              Navigator.pop(context);
+              refresh();
+            },
+            child: const Text('Confirm'),
+          ),
+        ],
+      ),
+    );
+  }
   void _showActionSheet(BuildContext context, double ID) {
     showCupertinoModalPopup<void>(
       context: context,
@@ -269,13 +367,13 @@ class homeState extends State<Home> {
             /// defualt behavior, turns the action's text to bold text.
             isDefaultAction: true,
             onPressed: () {
-              _propertiesDialog(context, ID);
+              _titleDialog(context, ID);
             },
             child: const Text('Rename'),
           ),
           CupertinoActionSheetAction(
             onPressed: () {
-              Navigator.pop(context);
+              _categoryDialog(context, ID);
             },
             child: const Text('Change Category'),
           ),
