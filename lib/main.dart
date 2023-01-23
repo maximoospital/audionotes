@@ -436,17 +436,32 @@ class homeState extends State<Home> {
                 SizedBox(
                   width: MediaQuery.of(context).size.width,
                   child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 0),
                       child: Container(
                         child:
-                          CupertinoSearchTextField(
-                            controller: controller,
-                            placeholder: "Search a note",
-                            onChanged: (value) {
-                              filterSearch(value);
-                            },
-                            autocorrect: true,
-                          ),
+                        Row(
+                          children: [
+                            Expanded(child:
+                            CupertinoSearchTextField(
+                              controller: controller,
+                              placeholder: "Search a note",
+                              onChanged: (value) {
+                                filterSearch(value);
+                              },
+                              autocorrect: true,
+                            ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(0.0),
+                              child: CupertinoButton(
+                                onPressed: () { changeOrder(); },
+                                padding: EdgeInsets.all(0.0),
+                                child: Icon(order == 1 ? CupertinoIcons.sort_down : CupertinoIcons.sort_up),
+                              ),
+                            ),
+                          ],
+                        ),
+
                       )
                   ),
                 ),
