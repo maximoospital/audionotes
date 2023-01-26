@@ -1,3 +1,4 @@
+import 'package:cupertino_radio_choice/cupertino_radio_choice.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/cupertino.dart';
@@ -91,6 +92,7 @@ class homeState extends State<Home> {
   TextEditingController controller = TextEditingController(text: "");
   late int index;
   late CupertinoButton cupertinoButton;
+  bool _show = false;
   refresh() {
     save();
     setState(() {});
@@ -148,6 +150,27 @@ class homeState extends State<Home> {
     } else {
       changeOrder();
       changeOrder();
+    }
+  }
+  filterCategory(text) {
+    changeOrder();
+    changeOrder();
+    if(text != 'all'){
+      List results = [];
+      results = yourObjectListRev.where((element) => element.category.toString().toLowerCase() == text.toLowerCase()).toList();
+      yourObjectListRev = results;
+      refresh();
+    } else {
+      changeOrder();
+      changeOrder();
+    }
+  }
+  showFilter(){
+    _show = !_show;
+    refresh();
+    if(_show == false){
+      filterCategory('all');
+      CupertinoRadioResetSelect();
     }
   }
   removeToList(IDRemove) async{
@@ -454,14 +477,44 @@ class homeState extends State<Home> {
                             Padding(
                               padding: const EdgeInsets.all(0.0),
                               child: CupertinoButton(
-                                onPressed: () { changeOrder(); },
+                                onPressed: () { showFilter(); },
                                 padding: EdgeInsets.all(0.0),
-                                child: Icon(order == 1 ? CupertinoIcons.sort_down : CupertinoIcons.sort_up),
+                                child: Icon(CupertinoIcons.slider_horizontal_3),
                               ),
                             ),
                           ],
                         ),
 
+                      )
+                  ),
+                ),
+                SizedBox(height: 2),
+                AnimatedSize(
+                  duration: const Duration(milliseconds: 150),
+                  curve: Curves.ease,
+                  child: SizedBox(
+                      height: _show? null : 0.0,
+                      width: MediaQuery.of(context).size.width,
+                      child: Row(
+                          children: [
+                            Expanded(
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 0),
+                                child: Row(
+                                    children: [
+                                      CupertinoRadioChoice(
+                                          choices: const {'all' : 'All', 'Uncategorized' : 'Uncategorized', 'Uncategorized 2' : 'Uncategorized 2', 'Uncategorized 3' : 'Uncategorized 3'},
+                                          onChange: (selectedCategory) {
+                                            filterCategory(selectedCategory);
+                                          },
+                                          initialKeyValue: 'all',
+                                      )
+                                    ]
+                                ),
+                              )
+                            )
+                          ]
                       )
                   ),
                 ),

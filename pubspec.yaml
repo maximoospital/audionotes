@@ -47,6 +47,9 @@ dependencies:
   flutter_native_splash: ^2.2.16
   holding_gesture: ^1.1.0
   flutter_typeahead: ^4.1.1
+  cupertino_radio_choice:
+    git:
+      url: https://github.com/maximoospital/flutter_cupertino_radio_choice_reset
   audio_waveforms:
     git:
       url: https://github.com/maximoospital/audio_waveforms_playerseek
