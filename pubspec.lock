@@ -97,9 +97,11 @@ packages:
   cupertino_radio_choice:
     dependency: "direct main"
     description:
-      name: cupertino_radio_choice
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "5d9e24625b03c0ed0b093bfa3d96c4eae17ec8c4"
+      url: "https://github.com/maximoospital/flutter_cupertino_radio_choice_reset"
+    source: git
     version: "1.0.2"
   dots_indicator:
     dependency: transitive
