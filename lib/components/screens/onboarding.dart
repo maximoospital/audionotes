@@ -1,3 +1,4 @@
+import 'package:audionotes/components/screens/home.dart';
 import 'package:audionotes/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

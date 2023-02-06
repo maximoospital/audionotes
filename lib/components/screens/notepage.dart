@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
-import 'package:audionotes/main.dart';
+import '../../main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -113,7 +113,7 @@ class notePageState extends State<notepage> {
             children: <Widget>[
               const SizedBox(height:15),
               CupertinoTextField(
-                placeholder: yourObjectList[yourObjectList.indexWhere(((yourObject) => yourObject.ID == widget.ID))].title,
+                placeholder: NoteObjectList[NoteObjectList.indexWhere(((NoteObject) => NoteObject.ID == widget.ID))].title,
                 inputFormatters: [
                   LengthLimitingTextInputFormatter(35),
                 ],
@@ -140,9 +140,9 @@ class notePageState extends State<notepage> {
             onPressed: () {
               if(titleController.text.isNotEmpty){
                 Navigator.pop(context);
-                final int index = yourObjectList.indexWhere(((yourObject) => yourObject.ID == widget.ID));
+                final int index = NoteObjectList.indexWhere(((NoteObject) => NoteObject.ID == widget.ID));
                 setState(() {
-                  yourObjectList[index].title = titleController.text;
+                  NoteObjectList[index].title = titleController.text;
                 });
                 widget.notifyParent();
               } else {
@@ -158,7 +158,7 @@ class notePageState extends State<notepage> {
   }
   @override
   Widget build(BuildContext context) {
-    final int index = yourObjectList.indexWhere(((yourObject) => yourObject.ID == widget.ID));
+    final int index = NoteObjectList.indexWhere(((NoteObject) => NoteObject.ID == widget.ID));
     return CupertinoPageScaffold(
       child: CustomScrollView(
         slivers: <Widget>[
@@ -167,7 +167,7 @@ class notePageState extends State<notepage> {
             middle: const Text('Note'),
             // When the "middle" parameter is implemented, the larget title is only visible
             // when the CupertinoSliverNavigationBar is fully expanded.
-            largeTitle: Text(yourObjectList[index].title),
+            largeTitle: Text(NoteObjectList[index].title),
             trailing: CupertinoButton(
               onPressed: () {
                 propertiesDialog(context);
